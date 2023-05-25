@@ -2,7 +2,7 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 
 const DayInSecs = 4 * 60;
-const ExpireInSecs = DayInSecs * 5;
+const ExpireInSecs = DayInSecs * 10;
 
 const DB = "musinsa";
 const CO = "msgcol";
