@@ -4,7 +4,7 @@ export const msg_template = {
   _class: "xxx.shopping.infra.repository.mongodb.newsfeed.v3.xxxxx",
   brandName: "23개 브랜드",
   category: "BRAND",
-  _id: null,
+  createDate: null,
   feedType: "FEED_SLIDE_NEWS",
   imageUrl: "https://xxx.shopping.com/xxx/xxx/xxx.jpg",
   isDelete: false,

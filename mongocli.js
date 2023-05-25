@@ -1,11 +1,15 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 
+const DayInSecs = 4 * 60;
+const ExpireInSecs = DayInSecs * 5;
+
+const DB = "musinsa";
+const CO = "msgcol";
+
 async function cli_init(bClean) {
   dotenv.config();
   const connURI = process.env.ATLAS_CONN_URI ?? "";
-  const DB = "musinsa";
-  const CO = "msgcol";
   let msgcol;
 
   const cli = new MongoClient(connURI);
@@ -20,23 +24,18 @@ async function cli_init(bClean) {
     bExist = false;
   }
 
-  if (bExist) {
-    console.log(`+++ collection exists: "${DB}.${CO}"`);
-    msgcol = db.collection(CO);
-  } else {
+  if (!bExist) {
     console.log(`+++ create collection: "${DB}.${CO}"`);
-    const col = await cli.db(DB).createCollection(CO, {
-      clusteredIndex: {
-        key: { _id: 1 },
-        unique: true,
-        name: "msg create timestamp & TTL",
-      },
-      expireAfterSeconds: 600,
-    });
+    const col = await cli.db(DB).createCollection(CO);
     msgcol = col;
+
+    await col.createIndex(
+      { createDate: 1 },
+      { expireAfterSeconds: ExpireInSecs },
+    );
   }
 
-  return msgcol;
+  return cli;
 }
 
-export { cli_init };
+export { cli_init, DB, CO, DayInSecs };
