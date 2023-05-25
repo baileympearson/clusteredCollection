@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 async function cli_init(bClean) {
   dotenv.config();
-  const connURI = proecess.env.ATLAS_CONN_URI ?? "";
+  const connURI = process.env.ATLAS_CONN_URI ?? "";
   const DB = "musinsa";
   const CO = "msgcol";
   let msgcol;
@@ -27,10 +27,11 @@ async function cli_init(bClean) {
     console.log(`+++ create collection: "${DB}.${CO}"`);
     const col = await cli.db(DB).createCollection(CO, {
       clusteredIndex: {
-        key: { createDate: 1 },
+        key: { _id: 1 },
         unique: true,
         name: "msg create timestamp & TTL",
       },
+      expireAfterSeconds: 600,
     });
     msgcol = col;
   }
