@@ -58,7 +58,7 @@ async function sleepUntil(ms) {
 
 async function run(args) {
   const bClean = args["clean"] ?? false;
-  const nDays = 2;
+  const nDays = 14;
   const DayInMs = DayInSecs * 1000;
 
   let cli = await cli_init(bClean);
