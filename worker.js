@@ -1,4 +1,14 @@
 import { msg_template } from "./msg_template.js";
+import { CO } from "./mongocli.js";
+
+export function progress(tickChar) {
+  let prog = 1;
+  const id = setInterval(() => {
+    const out = prog++ % 10 == 0 ? tickChar : ".";
+    process.stdout.write(out);
+  }, 1000);
+  return id;
+}
 
 export async function genMsgsPerWorker(nMsgsPerWorker) {
   let msgs = [];
@@ -29,6 +39,7 @@ export async function runWorker(wi, co, docs) {
 }
 
 export async function updateSamples(co, timegt, timelte) {
+  const starttm = new Date().getTime();
   const nBase = await co
     .find({
       createDate: {
@@ -37,10 +48,54 @@ export async function updateSamples(co, timegt, timelte) {
       },
     })
     .count();
-  let nSamples = Math.floor(Math.random() * 100);
+  let nSamples = Math.floor((Math.random() / 3) * 100);
   nSamples = Math.max(5, nSamples);
   nSamples = Math.min(25, nSamples);
   nSamples = Math.floor((nSamples * nBase) / 100);
-  console.log(`nSamples = ${nSamples}/${nBase}`);
-  console.log(`update <${timegt.toISOString()}, ${timelte.toISOString()}]`);
+  console.log(
+    `update [${nSamples}/${nBase}] btn ${timegt.toISOString()} & ${timelte.toISOString()}`,
+  );
+
+  const pipeline = [
+    {
+      $match: {
+        createDate: {
+          $gt: timegt,
+          $lte: timelte,
+        },
+      },
+    },
+    {
+      $sample: {
+        size: nSamples,
+      },
+    },
+    {
+      $set: {
+        isOpen: true,
+      },
+    },
+    {
+      $merge: {
+        into: CO,
+        on: "_id",
+        whenMatched: "replace",
+      },
+    },
+  ];
+  const progid = progress("U");
+  await co.aggregate(pipeline).toArray();
+  const nUpdated = await co
+    .find({
+      createDate: {
+        $gt: timegt,
+        $lte: timelte,
+      },
+      isOpen: true,
+    })
+    .count();
+  clearInterval(progid);
+  console.log();
+  const endtm = new Date().getTime();
+  console.log("> done nUpdated=", nUpdated, "/ elapsed:", endtm - starttm);
 }

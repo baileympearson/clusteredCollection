@@ -1,15 +1,11 @@
 import nopt from "nopt";
 import { cli_init, DB, CO, DayInSecs } from "./mongocli.js";
-import { genMsgsPerWorker, runWorker, updateSamples } from "./worker.js";
-
-function progress(tickChar) {
-  let prog = 1;
-  const id = setInterval(() => {
-    const out = prog++ % 10 == 0 ? tickChar : ".";
-    process.stdout.write(out);
-  }, 1000);
-  return id;
-}
+import {
+  genMsgsPerWorker,
+  runWorker,
+  updateSamples,
+  progress,
+} from "./worker.js";
 
 async function runDailyJob(co, dayno) {
   const nMsgsPerDay = 3 * 1000 * 1000;
