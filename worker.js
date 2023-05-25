@@ -84,17 +84,18 @@ export async function updateSamples(co, timegt, timelte) {
   ];
   const progid = progress("U");
   await co.aggregate(pipeline).toArray();
-  const nUpdated = await co
-    .find({
-      createDate: {
-        $gt: timegt,
-        $lte: timelte,
-      },
-      isOpen: true,
-    })
-    .count();
+  // const nUpdated = await co
+  //   .find({
+  //     createDate: {
+  //       $gt: timegt,
+  //       $lte: timelte,
+  //     },
+  //     isOpen: true,
+  //   })
+  //   .count();
   clearInterval(progid);
   console.log();
   const endtm = new Date().getTime();
-  console.log("> done nUpdated=", nUpdated, "/ elapsed:", endtm - starttm);
+  console.log("> done nUpdated=", nSamples, "/ elapsed:", endtm - starttm);
+  // console.log("> done nUpdated=", nUpdated, "/ elapsed:", endtm - starttm);
 }
