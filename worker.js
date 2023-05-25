@@ -48,9 +48,8 @@ export async function updateSamples(co, timegt, timelte) {
       },
     })
     .count();
-  let nSamples = Math.floor((Math.random() / 3) * 100);
+  let nSamples = Math.round(Math.random() * 25);
   nSamples = Math.max(5, nSamples);
-  nSamples = Math.min(25, nSamples);
   nSamples = Math.floor((nSamples * nBase) / 100);
   console.log(
     `update [${nSamples}/${nBase}] btn ${timegt.toISOString()} & ${timelte.toISOString()}`,
