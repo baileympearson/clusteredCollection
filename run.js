@@ -63,12 +63,9 @@ async function run(args) {
 
   let cli = await cli_init(bClean);
 
-  let co;
+  const co = cli.db(DB).collection(CO);
   let prevLast = new Date();
   for (let d = 1; d <= nDays; d++) {
-    cli.close();
-    cli = await cli_init(false);
-    co = cli.db(DB).collection(CO);
     const starttm = new Date();
     await runDailyJob(co, d);
 
