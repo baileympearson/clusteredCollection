@@ -1,1 +1,1 @@
-ATLAS_CONN_URI=
+ATLAS_CONN_URI="mongodb://bob:pwd123@localhost:31000,localhost:31001,localhost:31002/?replicaSet=rs"

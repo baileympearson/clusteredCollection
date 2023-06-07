@@ -9,6 +9,7 @@ const CO = "msgcol";
 
 async function cli_init(bClean) {
   dotenv.config();
+  console.error(process.pid);
   const connURI = process.env.ATLAS_CONN_URI ?? "";
   let msgcol;
 

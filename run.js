@@ -6,10 +6,11 @@ import {
   updateSamples,
   progress,
 } from "./worker.js";
+import { writeHeapSnapshot } from 'v8';
 
 async function runDailyJob(co, dayno) {
-  const nMsgsPerDay = 3 * 1000 * 1000;
-  const nMsgsPerWorker = 100 * 1000;
+  const nMsgsPerDay = 1_000_000;
+  const nMsgsPerWorker = 100_000;
   let workers = [];
 
   const timeStart = new Date();
@@ -40,8 +41,7 @@ async function runDailyJob(co, dayno) {
   for (const i in results) {
     if (!results[i].acknowledged) {
       console.log(
-        `wkr[${i + 1}]: ack=${results[i].acknowledged}, nIns=${
-          results[i].insertedCount
+        `wkr[${i + 1}]: ack=${results[i].acknowledged}, nIns=${results[i].insertedCount
         }`,
       );
     }
@@ -63,9 +63,13 @@ async function run(args) {
 
   let cli = await cli_init(bClean);
 
+  await sleepUntil(10000); // let the heap settle itself after the driver has been loaded
+
   const co = cli.db(DB).collection(CO);
   let prevLast = new Date();
   for (let d = 1; d <= nDays; d++) {
+    writeHeapSnapshot();
+
     const starttm = new Date();
     await runDailyJob(co, d);
 
@@ -95,10 +99,10 @@ async function run(args) {
 }
 
 const knownOpts = {
-    clean: Boolean,
-  },
+  clean: Boolean,
+},
   shortHands = {
     c: ["--clean"],
   };
 
-await run(nopt(knownOpts, shortHands, process.argv, 1));
+await run({ clean: true });

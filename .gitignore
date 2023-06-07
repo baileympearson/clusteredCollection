@@ -130,3 +130,7 @@ dist
 .pnp.*
 
 package-lock.json
+
+*.heapsnapshot
+*.zip
+*.DS_Store
